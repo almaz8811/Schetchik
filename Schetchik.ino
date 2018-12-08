@@ -1,6 +1,13 @@
 #include <EEPROM.h>
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
 
+#define BLYNK_PRINT Serial
 #define pin 2
+
+char auth[] = "3534391eaa0346bda6090415430ceb23";
+char ssid[] = "Keenetic II";
+char pass[] = "N5iiwhdU";
 
 boolean statePin, statePinOld;      // Состояние пина
 unsigned long lastImpuls = 0;       // Время прошлого импульса
@@ -14,6 +21,7 @@ float wattage = 0;                  // Текущее потребление В�
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
+  Blynk.begin(auth, ssid, pass);
   pinMode(pin, INPUT_PULLUP);
   EEPROM.get(0, impulsCoint);     // Считать с ячейки 0 количество импульсов
   EEPROM.get(1, wat);             // Считать с ячейки 1 количество использованных Ватт
@@ -21,6 +29,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  Blynk.run();
   impuls();
   saveData();
 }
