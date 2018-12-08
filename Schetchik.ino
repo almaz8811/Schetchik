@@ -39,6 +39,7 @@ void impuls() {
   
   if (statePin != statePinOld && millis() - lastImpuls > 50) {    // Если состояние пина изменилось (с антидребезгом)
     if (statePin == HIGH) {                                       // И если индикатор горит
+      Blynk.virtualWrite(V5, 255);                                // Зажигаем светодиод
       impulsCoint = impulsCoint + 1;                              // Увеличить счетчик импульсов
       dlinaImpuls = millis() - lastImpuls;                        // Вычислить длину импульса
       lastImpuls = millis();
@@ -46,16 +47,19 @@ void impuls() {
       wattage = blincsPerHour / 3200;                             // Текущее потребление Ватт
       wat = (impulsCoint * 1000) / 3200;                          // Сколько Ватт использованно
       Serial.print(String(impulsCoint) + "   ");
+      Blynk.virtualWrite(V0, wattage);                            // Отправить текущее потребление Ватт
+      Blynk.virtualWrite(V1, wat / 1000);                         // Отправить количество Киловатт
       Serial.println(wat);                                        
       Serial.println(wattage);
     }
+    Blynk.virtualWrite(V5, 0);                                    // Гасим светодиод
   }
   
   statePinOld = statePin;
 }
 
 void saveData() {
-  if (millis() - lastSaveData > 600000) {   // Если прошло 5 минут
+  if (millis() - lastSaveData > 600000) {   // Если прошло 10 минут
     EEPROM.put(0, impulsCoint);             // Сохранить в ячейку 0 количество импульсов
     EEPROM.put(1, wat);                     // Сохранить в ячейку 1 количество использованных Ватт
     Serial.println("Данные сохранены: импульсов - " + String(impulsCoint) + " Ватт - " + String(wat));
